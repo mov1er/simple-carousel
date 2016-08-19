@@ -1,5 +1,5 @@
 # simple-carousel
-# my demo 自适应轮播
+# js原生 自适应轮播
 ## 方法slide(container,time,interval);
  container-容器(必须是string)
  time-切换间隔(ms)
