@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>carousel</title>
+    <style type="text/css">
+        *{ margin: 0; padding: 0; text-decoration: none;}
+        #container { width: 100vw; height: 100vh;overflow: hidden; position: relative;}
+        .bd { width: 999999px; height: 400px; position: absolute; z-index: 1;}
+        .bd img { float: left;}
+        .hd { position: absolute; height: 10px; width: 120px; z-index: 2; bottom: 50px; left: calc(50% - 60px);}
+        .hd span { cursor: pointer; float: left; border: 1px solid #fff; width: 15px; height: 15px; border-radius: 50%; background: #333; margin-right: 5px;}
+        .hd .on {  background: #159951;}
+        .arrow { cursor: pointer; display: none; line-height: 39px; text-align: center; font-size: 36px; font-weight: bold; width: 40px; height: 40px;  position: absolute; z-index: 2; top: calc(50% - 20px); background-color: RGBA(0,0,0,.3); color: #fff;}
+        .arrow:hover { background-color: rgba(0,0,0,.7);}
+        #container:hover .arrow { display: block;}
+        #prev { left: 40px;}
+        #next { right: 40px;}
+    </style>
+    
+</head>
+<body>
+
+<div id="container">
+    <div class="bd">
+        <img src="img/5.jpg" alt="1"/>
+        <img src="img/1.jpg" alt="1"/>
+        <img src="img/2.jpg" alt="2"/>
+        <img src="img/3.jpg" alt="3"/>
+        <img src="img/4.jpg" alt="4"/>
+        <img src="img/5.jpg" alt="5"/>
+        <img src="img/1.jpg" alt="5"/>
+    </div>
+    <div class="hd">
+        <span index="1" class="on"></span>
+        <span index="2"></span>
+        <span index="3"></span>
+        <span index="4"></span>
+        <span index="5"></span>
+    </div>
+    <a href="javascript:;" id="prev" class="arrow">P</a>
+    <a href="javascript:;" id="next" class="arrow">N</a>
+    <script type="text/javascript">
+        function slide(ele,time,inter){
+            var container=document.getElementById(ele);
+            var list=container.getElementsByClassName('bd')[0];
+            var buttons=container.getElementsByTagName('span');
+            var prev=document.getElementById('prev');
+            var next=document.getElementById('next');
+            var time=time;
+            var interval=inter;
+            var index=1;
+            var len=buttons.length;
+            var animated=false;
+            var timer=null;
+            var WIDTH=parseInt(window.getComputedStyle(container).width);
+            var HEIGHT=parseInt(window.getComputedStyle(container).height);
+            var imgs=container.getElementsByTagName('img');
+            for(i=0;i<imgs.length;i++){
+                imgs[i].style.width=WIDTH+'px';
+                imgs[i].style.height=HEIGHT+'px'
+            }
+            list.style.left=-WIDTH+'px';
+
+            function animate(offset){
+                var inter=10;
+                var speed=offset/(interval/inter);
+                var left=parseInt(list.style.left)+offset;
+                animated=true;
+                function move(){
+                    if((speed>0&&parseInt(list.style.left)<left)||(speed<0&&parseInt(list.style.left)>left)){
+                        list.style.left=parseInt(list.style.left)+speed+'px';
+                        setTimeout(move,inter);
+                    }else{
+                        list.style.left=left+"px";
+                        if(parseInt(list.style.left)>-WIDTH){
+                            list.style.left=-WIDTH*len+'px'
+                        }else if(parseInt(list.style.left)<-WIDTH*len){
+                            list.style.left=-WIDTH+'px'
+                        }
+                        animated=false
+                    }
+                }
+                move()  
+            }
+
+            function play(){
+                timer=setInterval(function(){
+                    next.onclick();
+                },time)
+            }
+
+            function stop(){
+                clearInterval(timer)
+            }
+
+            function moveButton(){
+                for(i=0;i<len;i++){
+                    if(buttons[i].className=='on'){
+                        buttons[i].className=''
+                    }
+                }
+                buttons[index-1].className='on';
+            }
+
+            prev.onclick=function(){
+                if(animated)return;
+                if(index==1){
+                    index=len
+                }else{
+                    index--
+                }
+                moveButton();
+                animate(WIDTH)
+            }
+
+            next.onclick=function(){
+                if(animated)return;
+                if(index==len){
+                    index=1
+                }else{
+                    index++
+                }
+                moveButton();
+                animate(-WIDTH)
+            }
+
+            for(i=0;i<len;i++){
+                buttons[i].onclick=function(){
+                    if(animated)return;
+                    for (j = 0;j< len; j++) {
+                        buttons[j].className=''
+                    }
+                    this.className='on';
+                    var myIndex=this.getAttribute('index');
+                    var offset=-WIDTH*(myIndex-index);
+                    animate(offset);
+                    index=myIndex;
+                }
+            }
+            container.onmousemove=stop;
+            container.onmouseout=play;
+            play();
+        }
+
+        slide("container",3000,500)
+      
+    </script>
+</div>
+
+</body>
+</html>
